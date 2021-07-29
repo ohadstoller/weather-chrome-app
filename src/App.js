@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {mockedTopSites} from './utils/datebuilder'
 import {SearchBox} from "./components/SearchBox";
 import {WeatherBox} from "./components/WeatherBox";
+import {TopSites} from "./components/TopSites";
+import {Site} from "./components/Site";
 
 const axios = require('axios');
 
@@ -14,16 +15,16 @@ const api = {
 function App() {
   const [city, setCity] = useState('');
   const [weather, setWeather] = useState(null);
-  const [topSites, setTopSite] = useState(mockedTopSites);
+  const [topSites, setTopSite] = useState([]);
 
 
-  // useEffect(()=> {
-  //   // eslint-disable-next-line no-undef
-  //   chrome.topSites.get(data => {
-  //     console.log("top sites: ", data)
-  //     setTopSite(data)
-  //   });
-  // }, [])
+  useEffect(()=> {
+    // eslint-disable-next-line no-undef
+    chrome.topSites.get(data => {
+      console.log("top sites: ", data)
+      setTopSite(data)
+    });
+  }, [])
 
 
   // function createTop(){chrome.topSites.get(function(topSites) {
@@ -39,7 +40,6 @@ function App() {
       console.log("lat and long ", latitude, longitude)
       const response = await axios.get(`${api.base}weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${api.key}`);
       setWeather(response.data);
-      debugger
     });
   }, []);
 
@@ -65,21 +65,14 @@ return (
 
       {weather ? (
         <WeatherBox weather={weather}/>
-      ) : <div className={"location-box"} >Loading.... If it takes too long, might be an issue with geo location or API </div> }
+      ) : <div className={"location-box"}>Loading.... If it takes too long, might be an issue with geo location or
+        API </div>}
 
-      <div className={"top-sites"}>
-        {
-          (topSites.map(site => {
-            return (
-              <div className={"site-tile"}>
-                <a className={"site-link"} href={site.url} key={site.title}>
-                  {site.title}
-                </a>
-              </div>
-            );
-          }))
-        }
-      </div>
+      <TopSites topSites={topSites} callbackfn={site => {
+        return (
+          <Site key={site.title} site={site}/>
+        );
+      }}/>
     </main>
 
 
