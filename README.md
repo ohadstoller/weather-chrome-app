@@ -14,6 +14,7 @@ At the bottom, top sites visited by the user.
 
 1. Install dependencies and build the project. 
 
+```
 $ yarn i-build
 ```
 
